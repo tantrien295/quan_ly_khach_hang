@@ -2,8 +2,8 @@ services:
   - type: web
     name: quan-ly-khach-hang-api
     env: node
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,9 +19,16 @@ services:
         value: "30d"
       - key: JWT_COOKIE_EXPIRES
         value: "30"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=1024"
+    plan: free
+    autoDeploy: true
+    region: singapore
+    healthCheckPath: /api/health
 
 databases:
   - name: quanlykhachhang-db
     databaseName: quanlykhachhang
     user: quanlykhachhang_user
     plan: free
+    region: singapore

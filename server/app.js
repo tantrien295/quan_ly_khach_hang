@@ -18,8 +18,23 @@ const cookieParser = require('cookie-parser');
 
 // Import các module nội bộ
 const { errorHandler, notFoundHandler } = require('./middlewares/error.middleware');
-const { testConnection } = require('./config/db');
+const { testConnection, sequelize } = require('./config/db');
 const seed = require('./utils/seed');
+
+// Hàm đồng bộ hóa cơ sở dữ liệu
+const syncDatabase = async () => {
+  try {
+    console.log('🔄 Đang đồng bộ hóa cơ sở dữ liệu...');
+
+    await sequelize.sync({ alter: true });
+    console.log('✅ Đồng bộ hóa cơ sở dữ liệu thành công!');
+    // Tạo dữ liệu mẫu nếu cần
+    // await seed();
+  } catch (error) {
+    console.error('❌ Lỗi khi đồng bộ hóa cơ sở dữ liệu:', error);
+    process.exit(1);
+  }
+};
 
 // Khởi tạo ứng dụng Express
 const app = express();
@@ -79,7 +94,7 @@ if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require
   const morgan = require('morgan');
   app.use(morgan('dev'));
-  
+
   // Ghi log vào file
   const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), { flags: 'a' });
   app.use(morgan('combined', { stream: accessLogStream }));
@@ -101,10 +116,14 @@ const io = new Server(server, {
 // Lưu trữ đối tượng io để sử dụng ở các nơi khác
 app.set('io', io);
 
-// Kết nối cơ sở dữ liệu
+// Kết nối và đồng bộ hóa cơ sở dữ liệu
 testConnection()
-  .then(() => console.log('✅ Kết nối cơ sở dữ liệu thành công'))
-  .catch(err => {
+  .then(() => {
+    console.log('✅ Kết nối cơ sở dữ liệu thành công');
+    // Đồng bộ hóa cơ sở dữ liệu
+    return syncDatabase();
+  })
+  .catch((err) => {
     console.error('❌ Lỗi kết nối cơ sở dữ liệu:', err.message);
     process.exit(1);
   });
@@ -121,7 +140,7 @@ app.use(errorHandler);
 // Socket.IO connection
 io.on('connection', (socket) => {
   console.log('New client connected');
-  
+
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
@@ -132,11 +151,10 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     server.listen(PORT, () => {
-      console.log(`\n🚀 Server đang chạy trên cổng ${PORT}`);
+      console.log(`\n🚀 Server đang chạy trên cổng ${PORT}...`);
       console.log(`🌐 Môi trường: ${process.env.NODE_ENV}`);
-      console.log(`📡 URL: http://localhost:${PORT}`);
-      console.log(`📚 API Docs: http://localhost:${PORT}/api-docs\n`);
-      
+      console.log(`📝 API Documentation: http://localhost:${PORT}/api/docs`);
+
       // Tạo admin mặc định nếu chưa có
       seed.createDefaultAdmin();
     });

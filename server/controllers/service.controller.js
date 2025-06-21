@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Service } = require('../models');
 const { validationResult } = require('express-validator');
 
