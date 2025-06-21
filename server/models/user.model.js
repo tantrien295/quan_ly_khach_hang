@@ -5,12 +5,12 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     // Phương thức kiểm tra mật khẩu
     async validatePassword(password) {
-      return await bcrypt.compare(password, this.password);
+      return bcrypt.compare(password, this.password);
     }
 
     // Phương thức lấy thông tin công khai của người dùng
     toJSON() {
-      const values = Object.assign({}, this.get());
+      const values = { ...this.get() };
       // Ẩn các trường nhạy cảm
       delete values.password;
       delete values.refresh_token;
@@ -46,19 +46,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      email: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        unique: true,
-        validate: {
-          isEmail: {
-            msg: 'Email không hợp lệ',
-          },
-          notEmpty: {
-            msg: 'Email không được để trống',
-          },
-        },
-      },
+
       password: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -114,10 +102,8 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         allowNull: false,
       },
-      email_verification_token: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
+      // Đã xóa trường email và email_verification_token do chưa cần thiết
+
       refresh_token: {
         type: DataTypes.STRING,
         allowNull: true,
