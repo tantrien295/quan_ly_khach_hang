@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xác nhận địa chỉ email</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .header h1 {
+      margin: 0;
+      color: #2c3e50;
+    }
+    .content {
+      padding: 30px 20px;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      margin: 20px 0;
+      background-color: #3498db;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .button:hover {
+      background-color: #2980b9;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 0;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+    .code {
+      font-family: monospace;
+      font-size: 18px;
+      letter-spacing: 2px;
+      padding: 10px 15px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      margin: 15px 0;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Xác nhận địa chỉ email</h1>
+    </div>
+    
+    <div class="content">
+      <p>Xin chào <strong><%= name %></strong>,</p>
+      
+      <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>Hệ thống Quản lý Khách hàng</strong>. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào nút bên dưới:</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="<%= verificationUrl %>" class="button" style="color: #ffffff;">Xác nhận Email</a>
+      </div>
+      
+      <p>Hoặc sao chép và dán đường dẫn sau vào trình duyệt của bạn:</p>
+      <p class="code"><%= verificationUrl %></p>
+      
+      <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+      
+      <p>Trân trọng,<br>Đội ngũ hỗ trợ</p>
+    </div>
+    
+    <div class="footer">
+      <p>© <%= year %> Hệ thống Quản lý Khách hàng. Tất cả các quyền được bảo lưu.</p>
+      <p>Đây là email tự động, vui lòng không trả lời email này.</p>
+    </div>
+  </div>
+</body>
+</html>

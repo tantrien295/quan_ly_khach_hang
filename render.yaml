@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: quan-ly-khach-hang-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: quanlykhachhang-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: "30d"
+      - key: JWT_COOKIE_EXPIRES
+        value: "30"
+
+databases:
+  - name: quanlykhachhang-db
+    databaseName: quanlykhachhang
+    user: quanlykhachhang_user
+    plan: free
