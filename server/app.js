@@ -24,19 +24,31 @@ const seed = require('./utils/seed');
 // Hàm đồng bộ hóa cơ sở dữ liệu
 const syncDatabase = async () => {
   try {
-    console.log('🔄 Đang đồng bộ hóa cơ sở dữ liệu...');
+    console.log('🔄 Đang kiểm tra kết nối cơ sở dữ liệu...');
 
-    // Chỉ sync tự động nếu không phải môi trường production
-    if (process.env.NODE_ENV !== 'production') {
-      await sequelize.sync({ alter: true });
-      console.log('✅ Đồng bộ hóa cơ sở dữ liệu thành công!');
-    } else {
-      // Trên production, không sync tự động
-      console.log('⚠️  Bỏ qua sync tự động trên môi trường production');
-      await sequelize.authenticate(); // Chỉ kiểm tra kết nối
+    // Kiểm tra kết nối trước
+    await sequelize.authenticate();
+
+    if (process.env.NODE_ENV === 'production') {
+      console.log('✅ Kết nối database thành công (chế độ production)');
+      console.log('⚠️  Không tự động đồng bộ schema trên môi trường production');
+      return;
     }
+
+    // Ở môi trường phát triển, đồng bộ với cảnh báo
+    console.log('🔄 Đang đồng bộ hóa database...');
+    await sequelize.sync({
+      alter: {
+        drop: false, // Không xóa bảng/cột đang tồn tại
+      },
+    });
+
+    console.log('✅ Đồng bộ hóa database thành công!');
   } catch (error) {
-    console.error('❌ Lỗi khi đồng bộ hóa cơ sở dữ liệu:', error);
+    console.error('❌ Lỗi khi kết nối/đồng bộ database:', error.message);
+    if (error.original) {
+      console.error('Chi tiết lỗi:', error.original);
+    }
     process.exit(1);
   }
 };

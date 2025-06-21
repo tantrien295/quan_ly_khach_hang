@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
 const { Sequelize, DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
@@ -14,17 +15,24 @@ const createDefaultAdmin = async (userModel) => {
   try {
     if (!userModel) return;
 
-    const admin = await userModel.findOne({ where: { email: 'admin@example.com' } });
+    const admin = await userModel.findOne({ where: { username: 'admin' } });
     if (!admin) {
+      // Tạo mật khẩu đã được hash
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('admin123', salt);
+
       await userModel.create({
-        full_name: 'Admin',
-        email: 'admin@example.com',
-        password: 'admin123',
+        username: 'admin',
+        full_name: 'Quản trị viên',
+        password: hashedPassword,
         role: 'admin',
         is_active: true,
-        email_verified: true,
       });
       console.log('✅ Đã tạo tài khoản admin mặc định');
+      console.log('👤 Tên đăng nhập: admin');
+      console.log('🔑 Mật khẩu: admin123');
+    } else {
+      console.log('ℹ️ Tài khoản admin đã tồn tại');
     }
   } catch (error) {
     console.error('❌ Lỗi khi tạo tài khoản admin mặc định:', error);
@@ -70,12 +78,12 @@ const syncDb = async (force = false) => {
   try {
     // Tạo bảng nếu chưa tồn tại
     await sequelizeInstance.sync({ force });
-    
+
     // Tạo tài khoản admin mặc định nếu có model User
     if (db.User) {
       await createDefaultAdmin(db.User);
     }
-    
+
     console.log('✅ Database synchronized successfully');
     return true;
   } catch (error) {
@@ -83,8 +91,6 @@ const syncDb = async (force = false) => {
     throw error;
   }
 };
-
-
 
 // Thêm hàm syncDb vào đối tượng db
 db.syncDb = syncDb;

@@ -5,15 +5,16 @@
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "jest --detectOpenHandles --forceExit",
+    "start": "NODE_ENV=production node app.js",
+    "dev": "NODE_ENV=development nodemon app.js",
+    "test": "NODE_ENV=test jest --detectOpenHandles --forceExit",
     "lint": "eslint . --ext .js",
     "format": "prettier --write \"**/*.js\"",
     "seed": "node utils/seed.js",
     "db:create": "node config/createDatabase.js",
     "db:drop": "node config/dropDatabase.js",
-    "db:migrate": "node -e \"require('dotenv').config(); const { sequelize } = require('./models'); sequelize.sync({ alter: true }).then(() => { console.log('✅ Database synced!'); process.exit(0); }).catch(err => { console.error('❌ Error syncing database:', err); process.exit(1); });\"",
+    "db:migrate": "node -e \"require('dotenv').config(); const { sequelize } = require('./models'); sequelize.sync({ alter: { drop: false } }).then(() => { console.log('✅ Database synced!'); process.exit(0); }).catch(err => { console.error('❌ Error syncing database:', err); process.exit(1); });\"",
+    "db:reset": "node -e \"require('dotenv').config(); const { sequelize } = require('./models'); sequelize.sync({ force: true }).then(() => { console.log('✅ Database reset!'); process.exit(0); }).catch(err => { console.error('❌ Error resetting database:', err); process.exit(1); });\"",
     "db:seed:all": "npx sequelize-cli db:seed:all"
   },
   "keywords": [
