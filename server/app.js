@@ -26,10 +26,15 @@ const syncDatabase = async () => {
   try {
     console.log('🔄 Đang đồng bộ hóa cơ sở dữ liệu...');
 
-    await sequelize.sync({ alter: true });
-    console.log('✅ Đồng bộ hóa cơ sở dữ liệu thành công!');
-    // Tạo dữ liệu mẫu nếu cần
-    // await seed();
+    // Chỉ sync tự động nếu không phải môi trường production
+    if (process.env.NODE_ENV !== 'production') {
+      await sequelize.sync({ alter: true });
+      console.log('✅ Đồng bộ hóa cơ sở dữ liệu thành công!');
+    } else {
+      // Trên production, không sync tự động
+      console.log('⚠️  Bỏ qua sync tự động trên môi trường production');
+      await sequelize.authenticate(); // Chỉ kiểm tra kết nối
+    }
   } catch (error) {
     console.error('❌ Lỗi khi đồng bộ hóa cơ sở dữ liệu:', error);
     process.exit(1);
